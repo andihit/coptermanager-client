@@ -10,7 +10,7 @@ Logger =
   print: (message) ->
     timeElapsed = moment().diff(@startTime)
     durationStr = moment.utc(timeElapsed).format("mm:ss.SSS")
-    console.log('[' + durationStr + '] ' + message)
+    @emit 'log', '[' + durationStr + '] ' + message
 
   printLevel: (level, level_name, message) ->
     if @loglevel >= level

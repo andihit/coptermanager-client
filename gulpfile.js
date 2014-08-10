@@ -7,14 +7,22 @@ var concat = require('gulp-concat');
 gulp.task('coffee', function() {
   gulp.src('./src/**/*.coffee')
     .pipe(coffee().on('error', gutil.log))
-    .pipe(gulp.dest('./lib/'))
+    .pipe(gulp.dest('./lib/'));
 });
 
-gulp.task('browser', ['coffee'], function() {
+gulp.task('browserlib', ['coffee'], function() {
   gulp.src(['./lib/index.js'])
     .pipe(browserify({
       ignore: ['xmlhttprequest', './serialportclient']
     }))
+    .on('prebundle', function(bundle) {
+      bundle.require('coptermanager');
+    })
     .pipe(concat('coptermanager-browser.js'))
     .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('copy-browserlib', ['browserlib'], function() {
+  gulp.src('./dist/coptermanager-browser.js')
+    .pipe(gulp.dest('../coptermanager_server/apps/coptermanager_web/priv/static/js/lib'));
 });

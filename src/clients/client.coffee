@@ -1,9 +1,11 @@
+EventEmitter = require('events').EventEmitter
 moment = require 'moment'
 _ = require 'underscore'
 Log = require '../utils/log'
 
 module.exports = class Client
 
+  _.extend @prototype, EventEmitter.prototype
   _.extend @prototype, Log.Logger
 
   constructor: (options = {}) ->

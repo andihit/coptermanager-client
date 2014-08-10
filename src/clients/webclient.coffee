@@ -1,6 +1,10 @@
-XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest
-_ = require 'underscore'
 Client = require './client'
+Environment = require '../utils/environment'
+
+if Environment.isNode
+  XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest
+else
+  XMLHttpRequest = window.XMLHttpRequest
 
 module.exports = class WebClient extends Client
 
@@ -42,7 +46,8 @@ module.exports = class WebClient extends Client
     @apiCall '/copter', 'bind', {name: @name, type: type}, (data) =>
       if data.result == 'success'
         @copterid = data.uuid
-      cb(@copterid)
+        @emit 'takeoff', @copterid
+      cb(data)
     this
 
   clockwise: (degrees, cb = (->)) ->
