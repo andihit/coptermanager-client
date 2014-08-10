@@ -11,5 +11,5 @@ client
   this.flipOn()
 .after 1000, ->
   this.land()
-.after 0, ->
+.after 1000, ->
   this.disconnect()
