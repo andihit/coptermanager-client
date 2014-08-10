@@ -30,7 +30,7 @@ module.exports = class SerialPortClient extends Client
 
   sendCommand: (command, value = 0, cb = (->)) ->
     to_send = new Buffer(3)
-    to_send.writeUInt8(@copterid, 0)
+    to_send.writeUInt8(@copterid or 0, 0)
     to_send.writeUInt8(command, 1)
     to_send.writeUInt8(value, 2)
 
@@ -46,7 +46,7 @@ module.exports = class SerialPortClient extends Client
           cb(data)
 
 
-  takeoff: (type = COPTER_TYPES.HUBSAN_X4, cb = (->)) ->
+  takeoff: (name, type = COPTER_TYPES.HUBSAN_X4, cb = (->)) ->
     return if not super
     @sendCommand PROTOCOL_CODES.COPTER_BIND, type, (copterid) ->
       if copterid > 0
@@ -82,6 +82,6 @@ module.exports = class SerialPortClient extends Client
   disconnect: (cb = (->)) ->
     return if not super
     @sendCommand PROTOCOL_CODES.COPTER_DISCONNECT, null, ->
-      @copterid = 0
+      @copterid = null
       cb()
     this

@@ -17,10 +17,15 @@ module.exports = class WebClient extends Client
     xhr.setRequestHeader('Accept', 'application/json')
     xhr.onreadystatechange = =>
       if xhr.readyState == 4
-        data = JSON.parse(xhr.responseText)
-        if data.result == 'error'
-          @error command + ': ' + data.error
-        cb(data)
+        if xhr.status == 200
+          data = JSON.parse(xhr.responseText)
+          if data.result == 'error'
+            @error command + ': ' + data.error
+          cb(data)
+        else if xhr.status == 503
+          @error 'Network error. Please check your network. Is ' + @endpoint + ' reachable?'
+        else
+          @error xhr.responseText
 
     xhr.send(JSON.stringify(data))
 
@@ -30,10 +35,11 @@ module.exports = class WebClient extends Client
     @apiCall '/copter/' + @copterid + '/' + command, command, data
 
 
-  takeoff: (type = 'hubsan_x4', cb = (->)) ->
+  takeoff: (name, type = 'hubsan_x4', cb = (->)) ->
     return if not super
-    @apiCall '/copter', 'bind', {type: type}, (data) =>
-      @copterid = data.copterid
+    @apiCall '/copter', 'bind', {name: @name, type: type}, (data) =>
+      if data.result == 'success'
+        @copterid = data.uuid
       cb(@copterid)
     this
 
@@ -65,6 +71,6 @@ module.exports = class WebClient extends Client
   disconnect: (cb = (->)) ->
     return if not super
     @sendCommand 'disconnect', null, ->
-      @copterid = 0
+      @copterid = null
       cb()
     this

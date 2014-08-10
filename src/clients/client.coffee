@@ -9,7 +9,8 @@ module.exports = class Client
   constructor: (options = {}) ->
     options.loglevel = Log.Loglevel.INFO
 
-    @copterid = 0
+    @name = null
+    @copterid = null
     @startTime = moment()
 
     @afterOffset = 0
@@ -21,14 +22,19 @@ module.exports = class Client
     return this
 
   is_connected: ->
-    return @copterid > 0
+    return !!@copterid
 
-  takeoff: (type, cb = (->)) ->
+  takeoff: (name, type, cb = (->)) ->
     if @is_connected()
       @error('this drone is already connected')
       return false
 
-    @info('takeoff')
+    if name
+      @name = name
+    else
+      @name = 'copter' + Math.round(Math.random() * 1000)
+
+    @info('takeoff ' + @name)
     return this
 
   clockwise: (degrees, cb = (->)) ->
