@@ -14,12 +14,16 @@ module.exports = class Client
     @startTime = moment()
 
     @afterOffset = 0
+    @timeouts = []
     @loglevel = options.loglevel
 
   after: (duration, fn) ->
-    setTimeout(fn.bind(this), @afterOffset + duration)
+    @timeouts.push setTimeout(fn.bind(this), @afterOffset + duration)
     @afterOffset += duration
     return this
+
+  exit: ->
+    clearTimeout timeout for timeout in @timeouts
 
   is_connected: ->
     return !!@copterid
@@ -27,6 +31,7 @@ module.exports = class Client
   takeoff: (name, type, cb = (->)) ->
     if @is_connected()
       @error('this drone is already connected')
+      @exit()
       return false
 
     if name
@@ -40,6 +45,7 @@ module.exports = class Client
   clockwise: (degrees, cb = (->)) ->
     if not @is_connected()
       @error('this drone is not connected')
+      @exit()
       return false
       
     @info('rotate clockwise ' + degrees + '°')
@@ -48,6 +54,7 @@ module.exports = class Client
   setFlip: (state, cb = (->)) ->
     if not @is_connected()
       @error('this drone is not connected')
+      @exit()
       return false
       
     @info('set flip ' + state)
@@ -59,6 +66,7 @@ module.exports = class Client
   setLed: (state, cb = (->)) ->
     if not @is_connected()
       @error('this drone is not connected')
+      @exit()
       return false
       
     @info('set led ' + state)
@@ -70,6 +78,7 @@ module.exports = class Client
   land: (cb = (->)) ->
     if not @is_connected()
       @error('this drone is not connected')
+      @exit()
       return false
       
     @info('land')
@@ -78,6 +87,7 @@ module.exports = class Client
   emergency: (cb = (->)) ->
     if not @is_connected()
       @error('this drone is not connected')
+      @exit()
       return false
       
     @info('emergency')
@@ -86,6 +96,7 @@ module.exports = class Client
   disconnect: (cb = (->)) ->
     if not @is_connected()
       @error('this drone is not connected')
+      @exit()
       return false
       
     @info('disconnect')

@@ -24,8 +24,10 @@ module.exports = class WebClient extends Client
           cb(data)
         else if xhr.status == 503
           @error 'Network error. Please check your network. Is ' + @endpoint + ' reachable?'
+          @exit()
         else
           @error xhr.responseText
+          @exit()
 
     xhr.send(JSON.stringify(data))
 
