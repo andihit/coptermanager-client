@@ -46,7 +46,7 @@ module.exports = class SerialPortClient extends Client
           cb(data)
 
 
-  takeoff: (name, type = COPTER_TYPES.HUBSAN_X4, cb = (->)) ->
+  bind: (name, type = COPTER_TYPES.HUBSAN_X4, cb = (->)) ->
     return if not super
     @sendCommand PROTOCOL_CODES.COPTER_BIND, type, (copterid) ->
       if copterid > 0

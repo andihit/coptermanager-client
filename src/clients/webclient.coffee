@@ -41,12 +41,12 @@ module.exports = class WebClient extends Client
     @apiCall '/copter/' + @copterid + '/' + command, command, data
 
 
-  takeoff: (name, type = 'hubsan_x4', cb = (->)) ->
+  bind: (name, type = 'hubsan_x4', cb = (->)) ->
     return if not super
     @apiCall '/copter', 'bind', {name: @name, type: type}, (data) =>
       if data.result == 'success'
         @copterid = data.uuid
-        @emit 'takeoff', @copterid
+        @emit 'bind', @copterid
       cb(data)
     this
 
@@ -77,7 +77,9 @@ module.exports = class WebClient extends Client
 
   disconnect: (cb = (->)) ->
     return if not super
-    @sendCommand 'disconnect', null, ->
-      @copterid = null
-      cb()
+    @sendCommand 'disconnect', null, (data) ->
+      if data.result == 'success'
+        @emit 'disconnect', @copterid
+        @copterid = null
+      cb(data)
     this

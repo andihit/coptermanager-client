@@ -30,7 +30,7 @@ module.exports = class Client
   is_connected: ->
     return !!@copterid
 
-  takeoff: (name, type, cb = (->)) ->
+  bind: (name, type, cb = (->)) ->
     if @is_connected()
       @error('this drone is already connected')
       @exit()
@@ -41,7 +41,17 @@ module.exports = class Client
     else
       @name = 'copter' + Math.round(Math.random() * 1000)
 
-    @info('takeoff ' + @name)
+    @info('bind ' + @name)
+    return this
+
+  takeoff: (cb = (->)) ->
+    if not @is_connected()
+      @error('this drone is not connected')
+      @exit()
+      return false
+      
+    @info('takeoff')
+    # TODO set THROTTLE
     return this
 
   clockwise: (degrees, cb = (->)) ->
