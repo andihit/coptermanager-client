@@ -16,7 +16,7 @@ gulp.task('browserlib', ['coffee'], function() {
       ignore: ['xmlhttprequest', './serialportclient']
     }))
     .on('prebundle', function(bundle) {
-      bundle.require('coptermanager');
+      bundle.require('./index.js', {expose: 'coptermanager'});
     })
     .pipe(concat('coptermanager-browser.js'))
     .pipe(gulp.dest('./dist'));
