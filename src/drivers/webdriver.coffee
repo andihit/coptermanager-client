@@ -19,9 +19,9 @@ module.exports = class WebClientDriver
     @endpoint = options.endpoint
     @log = options.log
 
-    @copterid = null
-    @name = null
-    @pin = null
+    @copterid = options.copterid or null
+    @name = options.name or null
+    @pin = options.pin or null
 
   apiCall: (path, command, data = {}, cb = (->)) ->
     xhr = new XMLHttpRequest()
@@ -46,7 +46,7 @@ module.exports = class WebClientDriver
 
   sendCommand: (command, value = null, cb = (->)) ->
     data = {}
-    data.value = value if value
+    data.value = value if value != null
     @apiCall "/copter/#{@copterid}/" + command, command, data, cb
 
   isConnected: ->
