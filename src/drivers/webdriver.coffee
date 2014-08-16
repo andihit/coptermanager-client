@@ -20,8 +20,16 @@ module.exports = class WebClientDriver
     @log = options.log
 
     @copterid = options.copterid or null
-    @name = options.name or null
+    @name = options.name or 'copter' + Math.round(Math.random() * 1000)
+    @type = options.type or 'hubsan_x4'
     @pin = options.pin or null
+    @bound = false
+
+  reset: ->
+    @copterid = null
+    @name = null
+    @pin = null
+    @bound = false
 
   apiCall: (path, command, data = {}, cb = (->)) ->
     xhr = new XMLHttpRequest()
@@ -59,18 +67,36 @@ module.exports = class WebClientDriver
       @log.error('this drone is not connected')
       return false
 
-  bind: (type = 'hubsan_x4', options = {}, cb = (->)) ->
-    if options.name
-      @name = options.name
-    else
-      @name = 'copter' + Math.round(Math.random() * 1000)
+  pollUntilBound: (cb) ->
+    pollFn = =>
+      @getState (data) =>
+        if data.result == 'success'
+          if data.state == 'bound'
+            @emit 'bind', @copterid
+            @bound = true
+            cb(data)
+          else
+            @log.info 'not bound yet, waiting...'
+            setTimeout(pollFn, 3000)
+        else
+          @log.error 'error during binding'
+          @emit 'exit'
 
-    @apiCall '/copter', 'bind', {name: @name, type: type}, (data) =>
+    setTimeout(pollFn, 3000)
+
+  bind: (cb = (->)) ->
+    @apiCall '/copter', 'bind', {name: @name, type: @type}, (data) =>
       if data.result == 'success'
         @copterid = data.copterid
-        @emit 'bind', @copterid
-      cb(data)
+        @emit 'init', @copterid
+        @pollUntilBound cb
+      else
+        cb(data)
     this
+
+  getState: (cb = (->)) ->
+    return if not @requireConnection()
+    @sendCommand 'state', null, cb
 
   throttle: (value, cb = (->)) ->
     return if not @requireConnection()
@@ -109,5 +135,5 @@ module.exports = class WebClientDriver
     @sendCommand 'disconnect', null, (data) =>
       if data.result == 'success'
         @emit 'disconnect', @copterid
-        @copterid = null
+        @reset()
       cb(data)

@@ -49,14 +49,14 @@ module.exports = class Client
 
   # api methods
 
-  bind: (type = 'hubsan_x4', options = {}, cb = (->)) ->
+  bind: (cb = (->)) ->
     if @isConnected()
       @log.error('this drone is already connected')
       @exit()
       return false
 
     @log.info('bind')
-    @driver.bind(type, options, cb)
+    @driver.bind(cb)
     return this
 
   throttle: (value, cb = (->)) ->
