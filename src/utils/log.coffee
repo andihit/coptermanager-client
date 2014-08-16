@@ -6,11 +6,14 @@ Loglevel = {
   DEBUG: 2
 }
 
-Logger = 
+Logger = class Logger
+
+  constructor: (@loglevel, @startTime, @outputFn) ->
+
   print: (message) ->
     timeElapsed = moment().diff(@startTime)
     durationStr = moment.utc(timeElapsed).format("mm:ss.SSS")
-    @emit 'log', '[' + durationStr + '] ' + message
+    @outputFn '[' + durationStr + '] ' + message
 
   printLevel: (level, level_name, message) ->
     if @loglevel >= level

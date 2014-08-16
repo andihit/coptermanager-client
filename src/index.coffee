@@ -1,7 +1,8 @@
 EventEmitter = require('events').EventEmitter
 _ = require 'underscore'
 Environment = require './utils/environment'
-Clients = require './clients'
+Client = require './client'
+Drivers = require './drivers'
 
 class ClientFactory
 
@@ -15,7 +16,8 @@ class ClientFactory
   createLocalClient: ClientFactory::createSerialPortClient
 
   createWebClient: (options = {}) ->
-    client = new Clients.WebClient(options)
+    options.driver = Drivers.WebDriver
+    client = new Client(options)
     @emit 'create', client
     return client
 

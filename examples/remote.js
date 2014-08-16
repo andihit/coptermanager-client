@@ -1,11 +1,11 @@
 var coptermanager = require('coptermanager');
 var client = coptermanager.createRemoteClient({endpoint: 'http://localhost:4000/api'});
 
-client.takeoff();
+client.bind();
 
 client
   .after(5000, function() {
-    this.clockwise(50);
+    this.takeoff();
   })
   .after(1000, function() {
     this.ledOn();

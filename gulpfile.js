@@ -4,10 +4,18 @@ var coffee = require('gulp-coffee');
 var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');
 
+var paths = {
+  coffee: './src/**/*.coffee'
+};
+
 gulp.task('coffee', function() {
-  return gulp.src('./src/**/*.coffee')
+  return gulp.src(paths.coffee)
     .pipe(coffee().on('error', gutil.log))
     .pipe(gulp.dest('./lib/'));
+});
+
+gulp.task('watch', function() {
+  gulp.watch(paths.coffee, ['coffee']);
 });
 
 gulp.task('browserlib', ['coffee'], function() {
