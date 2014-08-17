@@ -19,6 +19,7 @@ module.exports = class Client
     @driver = new options.driver(options)
     @driver.on 'log', (msg) => @emit 'log', msg
     @driver.on 'exit', => @exit()
+    @driver.on 'init', (data) => @emit 'init', data
     @driver.on 'bind', (data) => @emit 'bind', data
     @driver.on 'disconnect', => @emit 'disconnect'
 

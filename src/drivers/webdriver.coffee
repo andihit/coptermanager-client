@@ -88,7 +88,7 @@ module.exports = class WebClientDriver
     @apiCall '/copter', 'bind', {name: @name, type: @type}, (data) =>
       if data.result == 'success'
         @copterid = data.copterid
-        @emit 'init', @copterid
+        @emit 'init', data
         @pollUntilBound cb
       else
         cb(data)
