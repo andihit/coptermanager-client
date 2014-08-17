@@ -137,7 +137,16 @@ module.exports = class Client
     return if not @requireConnection()
 
     @log.info('takeoff')
-    # TODO set THROTTLE
+
+    # TODO optimize...
+    @after 0, ->
+      @driver.throttle(15)
+    @after 200, ->
+      @driver.throttle(50)
+    @after 200, ->
+      @driver.throttle(80)
+    @after 200, ->
+      @driver.throttle(120)
     return this
 
   land: (cb = (->)) ->
