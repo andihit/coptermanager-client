@@ -2,6 +2,7 @@ coptermanager = require('coptermanager')
 client = coptermanager.createRemoteClient(endpoint: 'http://localhost:4000/api')
 
 client.bind ->
+  
   client.takeoff()
   .after 5000, ->
     @elevator(112)

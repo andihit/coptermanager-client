@@ -1,15 +1,14 @@
 coptermanager = require('coptermanager')
-client = coptermanager.createLocalClient(port: '/dev/ttyS0', baudrate: 9600)
+client = coptermanager.createLocalClient(serialport: '/dev/tty.usbmodem1411')
 
-client
-.takeoff()
-.after 5000, ->
-  this.clockwise(50)
-.after 1000, ->
-  this.ledOn()
-.after 3000, ->
-  this.flipOn()
-.after 1000, ->
-  this.land()
-.after 1000, ->
-  this.disconnect()
+client.bind ->
+  
+  client.takeoff()
+  .after 5000, ->
+    @elevator(112)
+  .after 1000, ->
+    @ledOff()
+  .after 1000, ->
+    @land()
+  .after 1000, ->
+    @disconnect()

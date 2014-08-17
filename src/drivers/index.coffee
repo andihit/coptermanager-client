@@ -1,3 +1,3 @@
 module.exports =
-  #SerialPortClient: require('./serialportclient')
+  SerialPortDriver: require('./serialportdriver')
   WebDriver: require('./webdriver')

@@ -8,18 +8,20 @@ class ClientFactory
 
   _.extend @prototype, EventEmitter.prototype
 
-  createSerialPortClient: (options = {}) ->
-    client = new Clients.SerialPortClient(options)
+  createClient: (options) ->
+    client = new Client(options)
     @emit 'create', client
     return client
+
+  createSerialPortClient: (options = {}) ->
+    options.driver = Drivers.SerialPortDriver
+    return @createClient(options)
 
   createLocalClient: ClientFactory::createSerialPortClient
 
   createWebClient: (options = {}) ->
     options.driver = Drivers.WebDriver
-    client = new Client(options)
-    @emit 'create', client
-    return client
+    return @createClient(options)
 
   createRemoteClient: ClientFactory::createWebClient
 

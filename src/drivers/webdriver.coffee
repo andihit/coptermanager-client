@@ -1,6 +1,5 @@
 EventEmitter = require('events').EventEmitter
 _ = require 'underscore'
-Log = require '../utils/log'
 Environment = require '../utils/environment'
 
 if Environment.isNode
@@ -60,11 +59,21 @@ module.exports = class WebClientDriver
   isConnected: ->
     return !!@copterid
 
-  requireConnection: ->
+  requireConnected: ->
     if @isConnected()
       return true
     else
       @log.error('this drone is not connected')
+      return false
+
+  isBound: ->
+    return @bound
+
+  requireBound: ->
+    if @isBound()
+      return true
+    else
+      @log.error('this drone is not bound')
       return false
 
   pollUntilBound: (cb) ->
@@ -85,6 +94,11 @@ module.exports = class WebClientDriver
     setTimeout(pollFn, 3000)
 
   bind: (cb = (->)) ->
+    if @isBound()
+      @log.error('this drone is already bound')
+      @emit 'exit'
+      return false
+
     @apiCall '/copter', 'bind', {name: @name, type: @type}, (data) =>
       if data.result == 'success'
         @copterid = data.copterid
@@ -95,43 +109,43 @@ module.exports = class WebClientDriver
     this
 
   getState: (cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireConnected()
     @sendCommand 'state', null, cb
 
   throttle: (value, cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireBound()
     @sendCommand 'throttle', value, cb
 
   rudder: (value, cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireBound()
     @sendCommand 'rudder', value, cb
 
   aileron: (value, cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireBound()
     @sendCommand 'aileron', value, cb
 
   elevator: (value, cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireBound()
     @sendCommand 'elevator', value, cb
 
   setFlip: (state, cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireBound()
     @sendCommand 'flip', state, cb
 
   setLed: (state, cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireBound()
     @sendCommand 'led', state, cb
 
   setVideo: (state, cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireBound()
     @sendCommand 'video', state, cb
 
   emergency: (cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireBound()
     @sendCommand 'emergency', null, cb
 
   disconnect: (cb = (->)) ->
-    return if not @requireConnection()
+    return if not @requireBound()
     @sendCommand 'disconnect', null, (data) =>
       if data.result == 'success'
         @emit 'disconnect', @copterid
