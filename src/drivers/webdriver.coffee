@@ -26,7 +26,6 @@ module.exports = class WebClientDriver
 
   reset: ->
     @copterid = null
-    @name = null
     @pin = null
     @bound = false
 

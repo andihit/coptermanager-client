@@ -46,7 +46,7 @@ module.exports = class SerialPortDriver
     @serialPort = null
     @log = options.log
 
-    @copterid = options.copterid or null
+    @copterid = null
     @type = options.type or COPTER_TYPES.HUBSAN_X4
     @bound = false
 
