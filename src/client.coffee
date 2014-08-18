@@ -43,6 +43,16 @@ module.exports = class Client
     @log.info('exiting...')
     clearTimeout timeout for timeout in @timeouts
 
+  isConnected: ->
+    return @driver.isConnected()
+
+  requireConnected: ->
+    if @isConnected()
+      return true
+    else
+      @log.error('this drone is not connected')
+      return false
+
   isBound: ->
     return @driver.isBound()
 
@@ -57,6 +67,7 @@ module.exports = class Client
   # api methods
 
   bind: (cb = (->)) ->
+    return if not @requireConnected()
     if @isBound()
       @log.error('this drone is already bound')
       @exit()
@@ -132,7 +143,7 @@ module.exports = class Client
     return this
 
   disconnect: (cb = (->)) ->
-    return if not @requireBound()
+    return if not @requireConnected()
       
     @log.info('disconnect')
     @driver.disconnect(@bindCallback(cb))

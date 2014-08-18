@@ -97,21 +97,8 @@ module.exports = class SerialPortDriver
   isConnected: ->
     return !!@copterid
 
-  requireConnected: ->
-    if @isConnected()
-      return true
-    else
-      @log.error('this drone is not connected')
-
   isBound: ->
     return @bound
-
-  requireBound: ->
-    if @isBound()
-      return true
-    else
-      @log.error('this drone is not bound')
-      return false
 
   pollUntilBound: (cb) ->
     pollFn = =>
@@ -130,11 +117,6 @@ module.exports = class SerialPortDriver
     setTimeout(pollFn, 3000)
 
   bind: (cb = (->)) ->
-    if @isBound()
-      @log.error('this drone is already bound')
-      @emit 'exit'
-      return false
-
     @sendCommand 'bind', PROTOCOL_CODES.COPTER_BIND, @type, (data) =>
       if data < 0xF0
         @copterid = data
@@ -145,46 +127,36 @@ module.exports = class SerialPortDriver
     this
 
   getState: (cb = (->)) ->
-    return if not @requireConnected()
     @sendCommand 'getstate', PROTOCOL_CODES.COPTER_GETSTATE, null, cb
 
   throttle: (value, cb = (->)) ->
-    return if not @requireBound()
     @sendCommand 'throttle', PROTOCOL_CODES.COPTER_THROTTLE, value, cb
 
   rudder: (value, cb = (->)) ->
-    return if not @requireBound()
     @sendCommand 'rudder', PROTOCOL_CODES.COPTER_RUDDER, value, cb
 
   aileron: (value, cb = (->)) ->
-    return if not @requireBound()
     @sendCommand 'aileron', PROTOCOL_CODES.COPTER_AILERON, value, cb
 
   elevator: (value, cb = (->)) ->
-    return if not @requireBound()
     @sendCommand 'elevator', PROTOCOL_CODES.COPTER_ELEVATOR, value, cb
 
   setFlip: (state, cb = (->)) ->
-    return if not @requireBound()
     value = if state == 'on' then 1 else 0
     @sendCommand 'flip', PROTOCOL_CODES.COPTER_FLIP, value, cb
 
   setLed: (state, cb = (->)) ->
-    return if not @requireBound()
     value = if state == 'on' then 1 else 0
     @sendCommand 'led', PROTOCOL_CODES.COPTER_LED, value, cb
 
   setVideo: (state, cb = (->)) ->
-    return if not @requireBound()
     value = if state == 'on' then 1 else 0
     @sendCommand 'video', PROTOCOL_CODES.COPTER_VIDEO, value, cb
 
   emergency: (cb = (->)) ->
-    return if not @requireBound()
     @sendCommand 'emergency', PROTOCOL_CODES.COPTER_EMERGENCY, null, cb
 
   disconnect: (cb = (->)) ->
-    return if not @requireBound()
     @sendCommand 'disconnect', PROTOCOL_CODES.COPTER_DISCONNECT, null, (data) =>
       if data == RESULT_CODES.PROTOCOL_OK
         @emit 'disconnect', @copterid

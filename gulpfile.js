@@ -26,7 +26,7 @@ gulp.task('watch', function() {
 gulp.task('browserlib', ['coffee'], function() {
   return gulp.src(['./lib/index.js'])
     .pipe(browserify({
-      ignore: ['xmlhttprequest', './serialportclient']
+      ignore: ['xmlhttprequest', './serialportdriver']
     }))
     .on('prebundle', function(bundle) {
       bundle.require('./index.js', {expose: 'coptermanager'});
