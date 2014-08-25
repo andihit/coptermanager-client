@@ -19,6 +19,10 @@ class ClientFactory
 
   createLocalClient: ClientFactory::createSerialPortClient
 
+  createSimpleSerialPortClient: (options = {}) ->
+    options.driver = Drivers.SimpleSerialPortDriver
+    return @createClient(options)
+
   createWebClient: (options = {}) ->
     options.driver = Drivers.WebDriver
     return @createClient(options)

@@ -67,7 +67,11 @@ module.exports = class Client
   # api methods
 
   bind: (cb = (->)) ->
-    return if not @requireConnected()
+    if @isConnected() and not @isBound()
+      @log.error('this drone is already connected but not bound. try powering the drone off and on again...')
+      @exit()
+      return false
+      
     if @isBound()
       @log.error('this drone is already bound')
       @exit()
@@ -134,6 +138,13 @@ module.exports = class Client
 
   videoOn: (cb) -> @setVideo('on', cb)
   videoOff: (cb) -> @setVideo('off', cb)
+
+  telemetry: (option, cb = (->)) ->
+    return if not @requireBound()
+      
+    @log.info('telemetry')
+    @driver.telemetry(option, @bindCallback(cb))
+    return this
 
   emergency: (cb = (->)) ->
     return if not @requireBound()

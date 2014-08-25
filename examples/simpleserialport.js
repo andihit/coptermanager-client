@@ -1,11 +1,12 @@
 var coptermanager = require('coptermanager');
-var client = coptermanager.createLocalClient({serialport: '/dev/tty.usbmodem1411'});
+var client = coptermanager.createSimpleSerialPortClient({serialport: '/dev/tty.usbmodem1411'});
 
 client.bind(function() {
 
   client.takeoff()
   .after(2000, function() {
-    this.elevator(112);
+    this.throttle(-5);
+    this.throttle(20);
   })
   .after(1000, function() {
     this.ledOff();
